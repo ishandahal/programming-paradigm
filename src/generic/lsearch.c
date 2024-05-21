@@ -11,10 +11,6 @@ int lsearch(int arr[], int key, int size) {
   return -1;
 }
 
-printf("something");
-
-printf("something else")
-
 int main() {
 
   int arr[5] = {1, 4, 5, 3, 6};
