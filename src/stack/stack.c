@@ -5,6 +5,7 @@
 
 #define START_SIZE 4
 #define DOUBLE 2
+#define THRES 3.0 / 4.0
 
 /* Initialize stack with allocation from the heap for START_SIZE integers. */
 void StackNew(Stack *container) {
@@ -27,7 +28,9 @@ void StackDispose(Stack *container) {
 void StackPush(Stack *container, int num) {
   // Need to allocate more memory. Let's use doubling strategy
   if (container->logicalLen >= container->allocLen) {
-    container->elems = realloc(container->elems, container->allocLen * DOUBLE);
+    container->elems =
+        realloc(container->elems, container->allocLen * DOUBLE * sizeof(int));
+    assert(container->elems != NULL); // Check if memory allocation succeded
     container->allocLen *= DOUBLE;
   }
   *(container->elems + container->logicalLen) = num;
@@ -37,7 +40,22 @@ void StackPush(Stack *container, int num) {
 /* Return number of elements on the stack */
 int StackLen(Stack *container) { return container->logicalLen; }
 
+/* Return length of allocated space of ints */
+int StackAllocLen(Stack *container) { return container->allocLen; }
+
 int StackPop(Stack *container) {
+  // If number of elements is less than 3/4 allocated length
+  // collapse allocated memory to 3/4 the allocated size
+  int thres =
+      (3.0 / 4.0) * (float)container->allocLen; // Decimal part truncated
+  // Use buffer to prevent immediate increament after deallocation
+  int buffer = (0.1 * (float)(container->logicalLen)); // Decimal part truncated
+  if (container->logicalLen == thres) {
+    container->elems =
+        realloc(container->elems, (thres + buffer) * sizeof(int));
+    assert(container->elems != NULL); // Check if memory allocation succeded
+    container->allocLen = thres + buffer;
+  }
   // Array indexing start at 0 but logicalLen is 1 ahead
   int res = *(container->elems + container->logicalLen - 1);
   container->logicalLen--;
@@ -48,9 +66,11 @@ int main() {
   Stack stack;
   StackNew(&stack);
   printf("Allocated memory to stack\n");
-  // Add 5 items to stack
-  for (int i = 0; i < 10; i++) {
+  // Add some items to stack
+  printf("Adding items: \n");
+  for (int i = 0; i < 8; i++) {
     StackPush(&stack, i + 5);
+    printf("Allocated size at step %d: %d\n", i, StackAllocLen(&stack));
   }
   printf("Length of stack after fill: %d\n", StackLen(&stack));
 
@@ -58,6 +78,7 @@ int main() {
   for (int i = 0; i < 5; i++) {
     printf("Popped: %d\n", StackPop(&stack));
     printf("Length of stack: %d\n", StackLen(&stack));
+    printf("Allocated size at step %d: %d\n", i, StackAllocLen(&stack));
   }
   StackDispose(&stack);
   printf("Disposed stack\n");
