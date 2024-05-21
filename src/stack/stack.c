@@ -5,7 +5,6 @@
 
 #define START_SIZE 4
 #define DOUBLE 2
-#define THRES 3.0 / 4.0
 
 /* Initialize stack with allocation from the heap for START_SIZE integers. */
 void StackNew(Stack *container) {
