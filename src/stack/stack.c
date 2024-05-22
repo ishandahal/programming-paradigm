@@ -25,8 +25,8 @@ void StackDispose(Stack *container) {
 /* Push ints on the stack. Increase memory by doubling strategy if no space is
  * available.*/
 void StackPush(Stack *container, int num) {
-  // Need to allocate more memory. Let's use doubling strategy
-  if (container->logicalLen >= container->allocLen) {
+  // Allocate more memory when full using doubling strategy
+  if (container->logicalLen == container->allocLen) {
     container->elems =
         realloc(container->elems, container->allocLen * DOUBLE * sizeof(int));
     assert(container->elems != NULL); // Check if memory allocation succeded
