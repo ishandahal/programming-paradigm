@@ -10,11 +10,14 @@
  */
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 typedef enum { Integer, String, List, Nil } nodeType;
 
 char *ConcatStr(const char *left, const char *right) {
 	// Allocate enough memory for both strings + null character
 	char * result = malloc(strlen(left) + strlen(right) + 1);
+	if (result == NULL) // Abort if unable to allocate memory
+		exit(1); 
 	strcpy(result, left);
 	strcat(result, right);
 	return result;
