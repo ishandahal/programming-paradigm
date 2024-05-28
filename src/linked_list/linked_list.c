@@ -15,39 +15,55 @@ void ListNew(LinkedList *list) {
 void ListAdd(LinkedList *ll, void *item) {
   Node *newNode = malloc(sizeof(Node));
   assert(newNode != NULL);
+	// Create new node 
   newNode->data = item;
+	newNode->prev = NULL;
 	newNode->next = NULL;
-  if (ll->length == 0) {
-    ll->first = newNode;
-    ll->last = newNode;
-		ll->length++;
-		return;
-  }
+
 	Node *current = ll->first;
-	while (current->next != NULL) {
-		current = current->next;
+	ll->first = newNode;
+
+	(ll->first)->next = current;
+	if (ll->length != 0){
+		ll->first->next->prev = ll->first;
 	}
-	current->next = newNode;
-	ll->last = current->next;
+
+	if (ll->length == 0) ll->last = ll->first;
 	ll->length++;
+}
+
+// Return length of linked list
+int ListLen(LinkedList * ll) {
+	return ll->length;
 }
 
 // Print the contents of the node for debugging purpose
 static void PrintList(LinkedList* ll) {
 	Node *current = ll->first;
+	printf("Values going forward: \n");
 	while (current) {
-		printf("Value at current node: %d\n", *((int *)current->data));
+		printf("%s ", ((char *)current->data));
 		current = current->next;
 	}
+	printf("\n");
+	current = ll->last;
+	printf("Values going backward: \n");
+	while (current) {
+		printf("%s ", ((char *)current->data));
+		current = current->prev;
+	}
+	printf("\n");
 }
 
 int main() {
   LinkedList ll;
-  int i = 23;
+  char *i = "sam";
+  char *j = "david";
+  char *k = "masllow";
   ListNew(&ll);
-  ListAdd(&ll, &i);
-  ListAdd(&ll, &i);
-  ListAdd(&ll, &i);
+  ListAdd(&ll, i);
+  ListAdd(&ll, j);
+  ListAdd(&ll, k);
 	PrintList(&ll);
-	printf("length of list: %d\n", ll.length);
+	printf("length of list: %d\n", ListLen(&ll));
 }
